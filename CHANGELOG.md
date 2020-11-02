@@ -2,6 +2,7 @@
 
 * First release
 
-## [1.0.2] - 2/11/2020
+## [1.0.3] - 2/11/2020
 
 * Fix screenshots
+* Add docs

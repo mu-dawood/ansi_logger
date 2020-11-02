@@ -1,7 +1,6 @@
 name: ansi_logger
 description: A new Flutter package project.
 version: 1.0.0
-author: mo.ah.dawood@gmail.com
 homepage: https://github.com/mo-ah-dawood/ansi_logger
 
 environment:

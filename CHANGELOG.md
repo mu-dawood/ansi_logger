@@ -6,3 +6,7 @@
 
 * Fix screenshots
 * Add docs
+
+## [1.0.4] - 2/11/2020
+
+* Log file size in dio interceptor

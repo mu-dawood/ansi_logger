@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:dio/dio.dart';
 
@@ -49,14 +50,17 @@ class AnsiDioInterceptor extends Interceptor {
     logger.logHeader("Request Data", error);
     if (response.request.data is FormData) {
       var frmData = (response.request.data as FormData);
+
+      logger.logField("Files", error);
+      frmData.files.forEach((element) {
+        var file = element.value;
+        logger.logString("${file.filename} (${_formatBytes(file.length)})",
+            error, element.key);
+      });
+      logger.logDashedLine(error);
       logger.logField("Fields", error);
       frmData.fields.forEach((element) {
         logger.logString(element.value, error, element.key);
-      });
-      logger.logDashedLine(error);
-      logger.logField("Files", error);
-      frmData.files.forEach((element) {
-        logger.logString(element.value.filename, error, element.key);
       });
     } else if (response.request.data is Map)
       logger.logJson(response.request.data as Map<String, dynamic>, error, 0);
@@ -86,5 +90,14 @@ class AnsiDioInterceptor extends Interceptor {
       logger.logList("", res, error, 0);
     else
       logger.logString(res.toString(), error);
+  }
+
+  static String _formatBytes(int bytes) {
+    if (bytes <= 0) return "0 B";
+    const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+    var i = (log(bytes) / log(1024)).floor();
+    return ((bytes / pow(1024, i)).toStringAsFixed(2).replaceAll(".00", "")) +
+        ' ' +
+        suffixes[i];
   }
 }

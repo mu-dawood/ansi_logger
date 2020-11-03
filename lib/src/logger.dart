@@ -69,7 +69,7 @@ class AnsiLogger {
     logString(AnsiColor.yellow("["), err, "$prefex$key");
     for (var item in list) {
       if (item is Map) {
-        logJson(item, err, count + 2);
+        logJson("", item, err, count + 2);
       } else if (item is List)
         logList("", item, err, count + 2);
       else {
@@ -119,20 +119,21 @@ class AnsiLogger {
   }
 
 // Log json object
-  void logJson(Map<String, dynamic> json, bool err, [int count = 0]) {
+  void logJson(String key, Map<String, dynamic> json, bool err,
+      [int count = 0]) {
     var prefex = count == 0 ? "" : "${List.filled(count, ' ').join("")}";
     if (json.isEmpty) {
       logString(AnsiColor.yellow("{}"), err, "$prefex");
     } else {
-      logString(AnsiColor.yellow("{"), err, '$prefex');
+      logString(AnsiColor.yellow("{"), err, '$prefex"$key"');
       json.forEach((key, value) {
         if (value is Map) {
-          logJson(value, err, count + 2);
+          logJson(key, value, err, count + 2);
         } else if (value is List) {
           logList(key, value, err, count + 2);
         } else
           logString(_getEncodable(value) + AnsiColor.blue(","), err,
-              '  $prefex"$key"');
+              '   $prefex"$key"');
       });
       logString(AnsiColor.yellow("},"), err, '$prefex');
     }

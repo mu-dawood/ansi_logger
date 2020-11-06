@@ -64,16 +64,19 @@ class AnsiLogger {
 
 // Log list of items
 
-  void logList(String key, List list, bool err, [int count = 0]) {
+  void logList(List list, bool err, [int count = 0, String key]) {
     var prefex = count == 0 ? "" : "${List.filled(count, ' ').join("")}";
-    logString(AnsiColor.yellow("["), err, "$prefex$key");
+    var _key = key == null ? "" : '"$key"';
+    String space = "  ";
+    logString(AnsiColor.yellow("["), err, "$prefex$_key");
     for (var item in list) {
       if (item is Map) {
-        logJson("", item, err, count + 2);
+        logJson(item, err, count + space.length);
       } else if (item is List)
-        logList("", item, err, count + 2);
+        logList(item, err, count + space.length);
       else {
-        logString(_getEncodable(item) + AnsiColor.blue(","), err, "  $prefex");
+        logString(
+            _getEncodable(item) + AnsiColor.blue(","), err, "$space$prefex");
       }
     }
     logString(AnsiColor.yellow("$prefex]") + AnsiColor.blue(","), err);
@@ -119,21 +122,23 @@ class AnsiLogger {
   }
 
 // Log json object
-  void logJson(String key, Map<String, dynamic> json, bool err,
-      [int count = 0]) {
+  void logJson(Map<String, dynamic> json, bool err,
+      [int count = 0, String key]) {
     var prefex = count == 0 ? "" : "${List.filled(count, ' ').join("")}";
     if (json.isEmpty) {
       logString(AnsiColor.yellow("{}"), err, "$prefex");
     } else {
-      logString(AnsiColor.yellow("{"), err, '$prefex"$key"');
+      var _key = key == null ? "" : '"$key"';
+      String space = "  ";
+      logString(AnsiColor.yellow("{"), err, '$prefex$_key');
       json.forEach((key, value) {
         if (value is Map) {
-          logJson(key, value, err, count + 2);
+          logJson(value, err, count + space.length, key);
         } else if (value is List) {
-          logList(key, value, err, count + 2);
+          logList(value, err, count + space.length, key);
         } else
           logString(_getEncodable(value) + AnsiColor.blue(","), err,
-              '   $prefex"$key"');
+              '$space$prefex"$key"');
       });
       logString(AnsiColor.yellow("},"), err, '$prefex');
     }

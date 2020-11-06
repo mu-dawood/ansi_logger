@@ -62,7 +62,6 @@ class MyHomePage extends StatelessWidget {
               onPressed: () {
                 AnsiLogger logger = AnsiLogger(90, "Json");
                 logger.logJson(
-                  "Json",
                   {
                     "key_1": "Value 1",
                     "Key_2": {

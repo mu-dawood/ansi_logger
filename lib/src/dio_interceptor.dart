@@ -37,7 +37,7 @@ class AnsiDioInterceptor extends Interceptor {
         response.request.method);
     //Query paramters
     logger.logHeader("Query paramters", error);
-    logger.logJson("", response.request.queryParameters, error, 0);
+    logger.logJson(response.request.queryParameters, error, 0);
 
     //Log headers
     logger.logHeader("Request headers", error);
@@ -63,10 +63,9 @@ class AnsiDioInterceptor extends Interceptor {
         logger.logString(element.value, error, element.key);
       });
     } else if (response.request.data is Map)
-      logger.logJson(
-          "", response.request.data as Map<String, dynamic>, error, 0);
+      logger.logJson(response.request.data as Map<String, dynamic>, error, 0);
     else if (response.request.data is List)
-      logger.logList("", response.request.data as List, error, 0);
+      logger.logList(response.request.data as List, error, 0);
     else
       logger.logString(response.request.data.toString(), error);
 
@@ -86,9 +85,9 @@ class AnsiDioInterceptor extends Interceptor {
         logger.logString(res, error);
       }
     } else if (res is Map)
-      logger.logJson("", res as Map<String, dynamic>, error, 0);
+      logger.logJson(res as Map<String, dynamic>, error, 0);
     else if (res is List)
-      logger.logList("", res, error, 0);
+      logger.logList(res, error, 0);
     else
       logger.logString(res.toString(), error);
   }

@@ -1,6 +1,6 @@
 name: ansi_logger
 description: Flutter package tht help you make pretty logs
-version: 1.0.4
+version: 1.0.6
 homepage: https://github.com/mo-ah-dawood/ansi_logger
 environment:
   sdk: ">=2.7.0 <3.0.0"

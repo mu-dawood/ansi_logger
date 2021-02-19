@@ -3,24 +3,24 @@ import 'package:test/test.dart';
 
 void main() {
   test('Test http', () async {
-    HttpLogger logger = HttpLogger(90, "HTTP");
+    var logger = HttpLogger(90, 'HTTP');
     var result = await logger.logHttp(
       method: 'Get',
       queryParameters: {
-        "Key1": "Value 1",
-        "Key2": "Value 2",
+        'Key1': 'Value 1',
+        'Key2': 'Value 2',
       },
       requestHeaders: {
-        "Key1": "Value 1",
-        "Key2": "Value 2",
+        'Key1': 'Value 1',
+        'Key2': 'Value 2',
       },
       response: {
-        "Key1": "Value 1",
-        "Key2": "Value 2",
+        'Key1': 'Value 1',
+        'Key2': 'Value 2',
       },
       responseHeaders: {
-        "Key1": "Value 1",
-        "Key2": "Value 2",
+        'Key1': 'Value 1',
+        'Key2': 'Value 2',
       },
       statusCode: 200,
       statusMessage: 'Success',
@@ -29,8 +29,8 @@ void main() {
     expect(
         result,
         equals({
-          "Key1": "Value 1",
-          "Key2": "Value 2",
+          'Key1': 'Value 1',
+          'Key2': 'Value 2',
         }));
   });
 }

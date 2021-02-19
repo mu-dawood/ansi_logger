@@ -1,5 +1,4 @@
 import 'package:ansi_logger/ansi_logger.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -86,24 +85,6 @@ class MyHomePage extends StatelessWidget {
                   false,
                   0,
                 );
-              },
-            ),
-            ElevatedButton(
-              child: Text("Dio log"),
-              onPressed: () {
-                Dio dio = Dio();
-                dio.interceptors.add(AnsiDioInterceptor(90, "Dio"));
-                dio.get("https://jsonplaceholder.typicode.com/todos/1");
-              },
-            ),
-            ElevatedButton(
-              child: Text("Dio Error"),
-              onPressed: () {
-                Dio dio = Dio();
-                dio.interceptors.add(AnsiDioInterceptor(90, "Dio"));
-                dio
-                    .post("https://jsonplaceholder.typicode.com/todos/1")
-                    .catchError((e) {});
               },
             ),
           ],

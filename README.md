@@ -1,6 +1,6 @@
 # ansi_logger
 
-Pretty logger with ansi colors supports dio
+Pretty logger with ansi colors
 
 ## How to use
 

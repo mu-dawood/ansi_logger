@@ -64,7 +64,7 @@ class AnsiLogger {
 
 // Log list of items
 
-  void logList(List list, bool err, [int count = 0, String key]) {
+  void logList(List list, bool err, [int count = 0, String? key]) {
     var prefex = count == 0 ? "" : "${List.filled(count, ' ').join("")}";
     var _key = key == null ? "" : '"$key"';
     String space = "  ";
@@ -90,11 +90,11 @@ class AnsiLogger {
   }
 // Log pretty string
 
-  void logString(String str, bool error, [String prefex]) {
+  void logString(String str, bool error, [String? prefex]) {
     _logString(str.replaceAll("\n", "⏎").replaceAll("\r", "⏎"), error, prefex);
   }
 
-  void _logString(String str, bool error, [String prefex]) {
+  void _logString(String str, bool error, [String? prefex]) {
     int maxWidth = length - 2;
     var _prefex = prefex == null || prefex.trim().isEmpty
         ? List.filled((prefex?.length ?? 0), " ").join("")
@@ -122,8 +122,7 @@ class AnsiLogger {
   }
 
 // Log json object
-  void logJson(Map<String, dynamic> json, bool err,
-      [int count = 0, String key]) {
+  void logJson(Map json, bool err, [int count = 0, String? key]) {
     var prefex = count == 0 ? "" : "${List.filled(count, ' ').join("")}";
     if (json.isEmpty) {
       logString(AnsiColor.yellow("{}"), err, "$prefex");

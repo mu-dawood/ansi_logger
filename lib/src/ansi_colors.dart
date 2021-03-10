@@ -30,3 +30,52 @@ class AnsiColor {
   /// Wrap text with grey color
   static String hint(String v) => '\u001b[0m\u001b[38;5;${240}m$v';
 }
+
+enum AnsiColors {
+  // Wrap text with red color
+  red,
+
+  /// Wrap text with black color
+  black,
+
+  /// Wrap text with green color
+  green,
+
+  /// Wrap text with yellow color
+  yellow,
+
+  /// Wrap text with blue color
+  blue,
+
+  /// Wrap text with magenta color
+  magenta,
+
+  /// Wrap text with cyan color
+  cyan,
+
+  /// Wrap text with white color
+  white,
+}
+
+extension AnsiColorsExt on AnsiColors {
+  String colorize(String v) {
+    switch (this) {
+      case AnsiColors.red:
+        return AnsiColor.red(v);
+      case AnsiColors.black:
+        return AnsiColor.black(v);
+      case AnsiColors.green:
+        return AnsiColor.green(v);
+      case AnsiColors.yellow:
+        return AnsiColor.yellow(v);
+      case AnsiColors.blue:
+        return AnsiColor.blue(v);
+      case AnsiColors.magenta:
+        return AnsiColor.magenta(v);
+      case AnsiColors.cyan:
+        return AnsiColor.cyan(v);
+      case AnsiColors.white:
+        return AnsiColor.white(v);
+    }
+  }
+}

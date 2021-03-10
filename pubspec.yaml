@@ -1,11 +1,10 @@
 name: ansi_logger
 description: Flutter package tht help you make pretty logs, and has alogger for http
-version: 2.0.2
+version: 2.0.3
 homepage: https://github.com/mo-ah-dawood/ansi_logger
 environment:
   sdk: '>=2.12.0-0 <3.0.0'
 
-dependencies: 
 dev_dependencies:
   test: ^1.16.3
   pedantic: ^1.10.0

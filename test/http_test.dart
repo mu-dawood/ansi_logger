@@ -1,9 +1,10 @@
+import 'package:ansi_logger/ansi_logger.dart';
 import 'package:ansi_logger/src/http_response_logger.dart';
 import 'package:test/test.dart';
 
 void main() {
   test('Test http', () async {
-    var logger = HttpLogger(90, 'HTTP');
+    var logger = AnsiLogger();
     var result = await logger.logHttp(
       method: 'Get',
       queryParameters: {

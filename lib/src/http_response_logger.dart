@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'ansi_colors.dart';
 import 'logger.dart';
 
 class IFile {
@@ -12,12 +13,7 @@ class IFile {
 }
 
 /// http logger helper
-class HttpLogger {
-  late AnsiLogger logger;
-  HttpLogger(int length, [String? name]) {
-    logger = AnsiLogger(length, name ?? 'HTTP');
-  }
-
+extension HttpLoggerExtnsion on AnsiLogger {
   Future logHttp({
     required String url,
     required String statusMessage,
@@ -34,69 +30,87 @@ class HttpLogger {
         statusCode != 301 &&
         statusCode != 201 &&
         statusCode != 302;
+    var logger = error ? copyWith(borderColor: AnsiColors.red) : this;
 
     ///Log url
-    logger.logBoxStart(error);
-    logger.logString(url, error);
-    logger.logDashedLine(error);
-    logger.logString(
-        '${statusCode.toString()} ╏ ${statusMessage}', error, method);
+    logger.logBoxStart();
+    logger.logString(url);
+    logger.logSpliter();
+    logger.logString('${statusCode.toString()} ➤ ${statusMessage}', method);
 
     ///Query paramters
-    logger.logHeader('Query paramters', error);
-    logger.logJson(queryParameters, error, 0);
+    logger.logSolidLine();
+    logger
+        .copyWith(stringColor: AnsiColors.magenta)
+        .logString('Query paramters');
+    logger.logSpliter();
+    logger.logJson(queryParameters);
 
     ///Log headers
-    logger.logHeader('Request headers', error);
-    requestHeaders.forEach((key, value) {
-      logger.logString('$value', error, key);
-    });
+    logger.logSolidLine();
+    logger
+        .copyWith(stringColor: AnsiColors.magenta)
+        .logString('Request headers');
+    logger.logSpliter();
+    logger.logJson(requestHeaders);
 
     ///Log Data
-    logger.logHeader('Request Data', error);
+    logger.logSolidLine();
+    logger.copyWith(stringColor: AnsiColors.magenta).logString('Request Data');
+    logger.logSpliter();
     if (files != null) {
       var totalSize = files.fold<int>(
           0, (previousValue, element) => previousValue + element.length);
-      logger.logField('Files: ${_formatBytes(totalSize)}', error);
+      logger
+          .copyWith(stringColor: AnsiColors.cyan)
+          .logString('Files: ${_formatBytes(totalSize)}');
+      logger.logSpliter();
       files.forEach((element) {
         logger.logString(
-            '${element} (${_formatBytes(element.length)})', error, element.key);
+            '${element.filename} (${_formatBytes(element.length)})',
+            element.key);
       });
-      logger.logDashedLine(error);
-      logger.logField('Fields', error);
+      logger.logSpliter();
+      logger.copyWith(stringColor: AnsiColors.cyan).logString('Fields');
+      logger.logSpliter();
     }
     if (requestData != null) {
       if (requestData is Map) {
-        logger.logJson(requestData, error, 0);
+        logger.logJson(requestData, 0);
       } else if (requestData is List) {
-        logger.logList(requestData, error, 0);
+        logger.logList(requestData, 0);
       } else {
-        logger.logString(requestData.toString(), error);
+        logger.logString(requestData.toString());
       }
     }
+
+    ///Log Response headers
+    logger.logSolidLine();
+    logger
+        .copyWith(stringColor: AnsiColors.magenta)
+        .logString('Response headers');
+    logger.logSpliter();
+    logger.logJson(responseHeaders);
 
     ///Log Response
-    logger.logHeader('Response', error);
-    _logResponse(response, error);
-    logger.logBoxEnd(error);
+    logger.logSolidLine();
+    logger.copyWith(stringColor: AnsiColors.magenta).logString('Response');
+    if (response != null) {
+      if (response is Map) {
+        logger.logJson(response, 0);
+      } else if (response is List) {
+        logger.logList(response, 0);
+      } else {
+        try {
+          logger.logJson(jsonDecode(response));
+        } catch (e) {
+          logger.logString(response.toString());
+        }
+      }
+    }
+    logger.logBoxEnd();
 
     return response;
-  }
-
-  void _logResponse(dynamic res, bool error) {
-    if (res is String) {
-      try {
-        _logResponse(jsonDecode(res), error);
-      } catch (e) {
-        logger.logString(res, error);
-      }
-    } else if (res is Map) {
-      logger.logJson(res as Map<String, dynamic>, error, 0);
-    } else if (res is List) {
-      logger.logList(res, error, 0);
-    } else {
-      logger.logString(res.toString(), error);
-    }
   }
 
   static String _formatBytes(int bytes) {

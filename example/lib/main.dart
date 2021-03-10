@@ -36,30 +36,36 @@ class MyHomePage extends StatelessWidget {
             ElevatedButton(
               child: Text("Box log"),
               onPressed: () {
-                AnsiLogger logger = AnsiLogger(90, "Box");
+                AnsiLogger logger = AnsiLogger(name: "Box");
                 logger.logBox(
-                    "اشهد ان لا اله الا الله وان محمد رسول الله", false);
+                  "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).",
+                );
               },
             ),
             ElevatedButton(
               child: Text("Advanced log"),
               onPressed: () {
-                AnsiLogger logger = AnsiLogger(90, "Advanced");
-                logger.logBoxStart(false);
-                logger.logString("إلا رسول الله صلي الله عليه وسلم", false);
-                logger.logDashedLine(false);
-                logger.logString("إلا رسول الله صلي الله عليه وسلم", false);
-                logger.logSolidLine(false);
-                logger.logString("إلا رسول الله صلي الله عليه وسلم", false);
-                logger.logBoxLine(false);
-                logger.logString("إلا رسول الله صلي الله عليه وسلم", false);
-                logger.logBoxEnd(false);
+                AnsiLogger logger = AnsiLogger(name: "Advanced");
+                logger.logBoxStart();
+                logger.logString("إلا رسول الله صلي الله عليه وسلم");
+                logger.logSpliter();
+                logger.logString("إلا رسول الله صلي الله عليه وسلم");
+                logger.logSolidLine();
+                logger.logString(
+                  "إلا رسول الله صلي الله عليه وسلم",
+                );
+                logger.logDoubleLine();
+                logger.logString(
+                  "إلا رسول الله صلي الله عليه وسلم",
+                );
+                logger.logBoxEnd();
               },
             ),
             ElevatedButton(
               child: Text("Json log"),
               onPressed: () {
-                AnsiLogger logger = AnsiLogger(90, "Json");
+                AnsiLogger logger = AnsiLogger(name: "Json");
+                logger.logBoxStart();
                 logger.logJson(
                   {
                     "key_1": "Value 1",
@@ -82,8 +88,44 @@ class MyHomePage extends StatelessWidget {
                       ]
                     ],
                   },
-                  false,
-                  0,
+                );
+                logger.logBoxEnd();
+              },
+            ),
+            ElevatedButton(
+              child: Text("Log http"),
+              onPressed: () {
+                AnsiLogger logger = AnsiLogger();
+                logger.logHttp(
+                  url: "http://site.com",
+                  statusMessage: "Done",
+                  method: "Get",
+                  statusCode: 400,
+                  queryParameters: {
+                    "key1": 1,
+                    "key2": "Value",
+                  },
+                  requestHeaders: {
+                    "key1": 1,
+                    "key2": "Value",
+                  },
+                  responseHeaders: {
+                    "key1": 1,
+                    "key2": "Value",
+                  },
+                  files: [
+                    IFile("filename1", "key", 76767676),
+                    IFile("filename2", "key", 76767676),
+                    IFile("filename3", "key", 76767676),
+                  ],
+                  requestData: {
+                    "key1": 1,
+                    "key2": "Value",
+                  },
+                  response: {
+                    "key1": 1,
+                    "key2": "Value",
+                  },
                 );
               },
             ),

@@ -121,7 +121,7 @@ class AnsiLogger {
     var _firstLine = true;
     while (_index < str.length) {
       var _line = '';
-      var _pref = _firstLine || forceSpace ? _prefex : _prefexSpace;
+      var _pref = _firstLine && !forceSpace ? _prefex : _prefexSpace;
       while ((_stringWidth('╎ $_pref$_line ╎')) <= length) {
         _line += _index < str.length ? str[_index] : space;
         _index++;

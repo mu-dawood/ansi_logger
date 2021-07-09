@@ -87,15 +87,8 @@ class AnsiLogger {
   /// Log pretty string
 
   void logString(String str, [String? prefex]) {
-    var prefexWidth = _stringWidth(prefex ?? '');
-    var _prefexSpace = '';
-    while ((_stringWidth(_prefexSpace)) < prefexWidth) {
-      _prefexSpace += ' ';
-    }
-    var i = 0;
     str.split('\n').forEach((element) {
-      _logString(element, i == 0 ? prefex : _prefexSpace);
-      i++;
+      _logString(element, prefex);
     });
   }
 
@@ -130,6 +123,7 @@ class AnsiLogger {
         _index++;
       }
       log("${borderColor.colorize('╎')} ${decorationColor.colorize(_pref)}${stringColor.colorize(_line)} ${borderColor.colorize('╎')}");
+      _firstLine = false;
     }
   }
 

@@ -87,8 +87,14 @@ class AnsiLogger {
   /// Log pretty string
 
   void logString(String str, [String? prefex]) {
+    var prefexWidth = _stringWidth(prefex ?? '');
+    var _prefexSpace = '';
+    while ((_stringWidth(_prefexSpace)) < prefexWidth) {
+      _prefexSpace += ' ';
+    }
+    int i = 0;
     str.split('\n').forEach((element) {
-      _logString(element, prefex);
+      _logString(element, i == 0 ? prefex : _prefexSpace);
     });
   }
 

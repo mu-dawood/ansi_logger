@@ -92,9 +92,10 @@ class AnsiLogger {
     while ((_stringWidth(_prefexSpace)) < prefexWidth) {
       _prefexSpace += ' ';
     }
-    int i = 0;
+    var i = 0;
     str.split('\n').forEach((element) {
       _logString(element, i == 0 ? prefex : _prefexSpace);
+      i++;
     });
   }
 

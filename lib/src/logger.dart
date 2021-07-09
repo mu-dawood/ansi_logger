@@ -87,12 +87,14 @@ class AnsiLogger {
   /// Log pretty string
 
   void logString(String str, [String? prefex]) {
+    var forceSpace = false;
     str.split('\n').forEach((element) {
-      _logString(element, prefex);
+      _logString(element, prefex, forceSpace);
+      forceSpace = true;
     });
   }
 
-  void _logString(String str, [String? prefex]) {
+  void _logString(String str, [String? prefex, bool forceSpace = false]) {
     var maxWidth = length - 2;
     var _prefex = prefex == null || prefex.trim().isEmpty
         ? List.filled((prefex?.length ?? 0), ' ').join('')
@@ -100,24 +102,26 @@ class AnsiLogger {
     var space = ' ';
     var strWidth = _stringWidth('╎ $_prefex$str ╎');
 
-    if (strWidth < maxWidth) {
-      var _space = '';
-      while ((_stringWidth('╎ $_prefex$str$_space ╎')) <= length) {
-        _space += space;
-      }
-      log("${borderColor.colorize('╎')} ${decorationColor.colorize(_prefex)}${stringColor.colorize('$str$_space')} ${borderColor.colorize('╎')}");
-      return;
-    }
     var prefexWidth = _stringWidth(_prefex);
     var _prefexSpace = '';
     while ((_stringWidth(_prefexSpace)) < prefexWidth) {
       _prefexSpace += space;
     }
+
+    if (strWidth < maxWidth) {
+      var _space = '';
+      while ((_stringWidth('╎ $_prefex$str$_space ╎')) <= length) {
+        _space += space;
+      }
+      log("${borderColor.colorize('╎')} ${decorationColor.colorize(forceSpace ? _prefexSpace : _prefex)}${stringColor.colorize('$str$_space')} ${borderColor.colorize('╎')}");
+      return;
+    }
+
     var _index = 0;
     var _firstLine = true;
     while (_index < str.length) {
       var _line = '';
-      var _pref = _firstLine ? _prefex : _prefexSpace;
+      var _pref = _firstLine || forceSpace ? _prefex : _prefexSpace;
       while ((_stringWidth('╎ $_pref$_line ╎')) <= length) {
         _line += _index < str.length ? str[_index] : space;
         _index++;

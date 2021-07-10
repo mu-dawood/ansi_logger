@@ -76,11 +76,11 @@ class AnsiLogger {
   }
 
   /// Log box line with start curves
-  String _getEncodable(Object item) {
+  String _getEncodable(Object? item) {
     try {
       return jsonEncode(item);
     } catch (e) {
-      return item.toString();
+      return item?.toString() ?? '';
     }
   }
 

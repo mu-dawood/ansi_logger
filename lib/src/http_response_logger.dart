@@ -26,49 +26,41 @@ extension HttpLoggerExtnsion on AnsiLogger {
     required dynamic response,
     List<IFile>? files,
   }) async {
-    var error = statusCode != 200 &&
-        statusCode != 301 &&
-        statusCode != 201 &&
-        statusCode != 302;
+    var error = statusCode != 200 && statusCode != 301 && statusCode != 201 && statusCode != 302;
     var logger = error ? copyWith(borderColor: AnsiColors.red) : this;
 
     ///Log url
     logger.logBoxStart();
     logger.logString(url);
     logger.logSpliter();
-    logger.logString('${statusCode.toString()} ➤ ${statusMessage}', method);
+    logger.logString(
+      '${statusCode.toString()}',
+      prefex: method,
+      separator: ' ➤ ${statusMessage} ➤ ',
+    );
 
     ///Query paramters
     logger.logSolidLine();
-    logger
-        .copyWith(stringColor: AnsiColors.magenta)
-        .logString('Query paramters');
+    logger.copyWith(stringColor: AnsiColors.purple).logString('Query paramters');
     logger.logSpliter();
     logger.logJson(queryParameters);
 
     ///Log headers
     logger.logSolidLine();
-    logger
-        .copyWith(stringColor: AnsiColors.magenta)
-        .logString('Request headers');
+    logger.copyWith(stringColor: AnsiColors.purple).logString('Request headers');
     logger.logSpliter();
     logger.logJson(requestHeaders);
 
     ///Log Data
     logger.logSolidLine();
-    logger.copyWith(stringColor: AnsiColors.magenta).logString('Request Data');
+    logger.copyWith(stringColor: AnsiColors.purple).logString('Request Data');
     logger.logSpliter();
     if (files != null) {
-      var totalSize = files.fold<int>(
-          0, (previousValue, element) => previousValue + element.length);
-      logger
-          .copyWith(stringColor: AnsiColors.cyan)
-          .logString('Files: ${_formatBytes(totalSize)}');
+      var totalSize = files.fold<int>(0, (previousValue, element) => previousValue + element.length);
+      logger.copyWith(stringColor: AnsiColors.cyan).logString('Files: ${_formatBytes(totalSize)}');
       logger.logSpliter();
       files.forEach((element) {
-        logger.logString(
-            '${element.filename} (${_formatBytes(element.length)})',
-            element.key);
+        logger.logString('${element.filename} (${_formatBytes(element.length)})', prefex: element.key);
       });
       logger.logSpliter();
       logger.copyWith(stringColor: AnsiColors.cyan).logString('Fields');
@@ -76,9 +68,9 @@ extension HttpLoggerExtnsion on AnsiLogger {
     }
     if (requestData != null) {
       if (requestData is Map) {
-        logger.logJson(requestData, 0);
+        logger.logJson(requestData);
       } else if (requestData is List) {
-        logger.logList(requestData, 0);
+        logger.logList(requestData);
       } else {
         logger.logString(requestData.toString());
       }
@@ -86,20 +78,18 @@ extension HttpLoggerExtnsion on AnsiLogger {
 
     ///Log Response headers
     logger.logSolidLine();
-    logger
-        .copyWith(stringColor: AnsiColors.magenta)
-        .logString('Response headers');
+    logger.copyWith(stringColor: AnsiColors.purple).logString('Response headers');
     logger.logSpliter();
     logger.logJson(responseHeaders);
 
     ///Log Response
     logger.logSolidLine();
-    logger.copyWith(stringColor: AnsiColors.magenta).logString('Response');
+    logger.copyWith(stringColor: AnsiColors.purple).logString('Response');
     if (response != null) {
       if (response is Map) {
-        logger.logJson(response, 0);
+        logger.logJson(response);
       } else if (response is List) {
-        logger.logList(response, 0);
+        logger.logList(response);
       } else {
         try {
           logger.logJson(jsonDecode(response));
@@ -117,8 +107,6 @@ extension HttpLoggerExtnsion on AnsiLogger {
     if (bytes <= 0) return '0 B';
     const suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     var i = (log(bytes) / log(1024)).floor();
-    return ((bytes / pow(1024, i)).toStringAsFixed(2).replaceAll('.00', '')) +
-        ' ' +
-        suffixes[i];
+    return ((bytes / pow(1024, i)).toStringAsFixed(2).replaceAll('.00', '')) + ' ' + suffixes[i];
   }
 }

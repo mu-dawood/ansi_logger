@@ -1,41 +1,45 @@
-import 'dart:convert';
-
 import 'ansi_colors.dart';
-import 'dart:developer' as developer;
+import 'std_io.dart' if (dart.library.html) 'std_web.dart';
 
 /// Advanced ansi logger
 class AnsiLogger {
-  final int length;
-  final String name;
+  final int? length;
   final AnsiColors stringColor;
   final AnsiColors borderColor;
-  final AnsiColors decorationColor;
+  final AnsiColors prefexColor;
+  final AnsiColors seperatorColor;
+  int getLength() {
+    return length ?? Std.terminalColumns() ?? 90;
+  }
+
   AnsiLogger({
-    this.length = 90,
-    this.name = 'ANSI',
-    this.stringColor = AnsiColors.blue,
-    this.borderColor = AnsiColors.green,
-    this.decorationColor = AnsiColors.yellow,
+    this.length,
+    this.stringColor = AnsiColors.blueJeans,
+    this.borderColor = AnsiColors.harlequinGreen,
+    this.prefexColor = AnsiColors.grey39,
+    this.seperatorColor = AnsiColors.sage,
   });
   AnsiLogger copyWith({
     int? length,
     String? name,
     AnsiColors? stringColor,
     AnsiColors? borderColor,
-    AnsiColors? decorationColor,
+    AnsiColors? prefexColor,
+    AnsiColors? seperatorColor,
   }) {
     return AnsiLogger(
       length: length ?? this.length,
-      name: name ?? this.name,
       stringColor: stringColor ?? this.stringColor,
       borderColor: borderColor ?? this.borderColor,
-      decorationColor: decorationColor ?? this.decorationColor,
+      prefexColor: prefexColor ?? this.prefexColor,
+      seperatorColor: seperatorColor ?? this.seperatorColor,
     );
   }
 
   String _getLine(String str, [String? prefex = '', String? suffix = '']) {
     var _str = '';
-    while (_stringWidth('$prefex$_str$suffix') <= length) {
+    var max = getLength();
+    while (_stringWidth('$prefex$_str$suffix') <= max) {
       _str += str;
     }
     return '$prefex$_str$suffix';
@@ -48,25 +52,17 @@ class AnsiLogger {
   String get solidLine => '─';
 
   /// Log developer message
-  void log(String str) {
-    developer.log(
-      str,
-      name: name,
-      sequenceNumber: 100,
-      stackTrace: null,
-    );
+  void log(List<String> messages) {
+    Std.log(messages);
   }
 
   /// Log box line with end curves
 
-  void logBoxEnd() => log(borderColor.colorize(_getLine(solidLine, '└', '┘')));
-  void logBoxStart() =>
-      log(borderColor.colorize(_getLine(solidLine, '┌', '┐')));
-  void logSolidLine() =>
-      log(borderColor.colorize(_getLine(solidLine, '├', '┤')));
-  void logSpliter() => log(borderColor.colorize(_getLine(' ', '|', '|')));
-  void logDoubleLine() =>
-      log(borderColor.colorize(_getLine(doubleLine, '├', '┤')));
+  void logBoxEnd() => log([borderColor.colorize(_getLine(solidLine, '└', '┘'))]);
+  void logBoxStart() => log([borderColor.colorize(_getLine(solidLine, '┌', '┐'))]);
+  void logSolidLine() => log([borderColor.colorize(_getLine(solidLine, '├', '┤'))]);
+  void logSpliter() => log([borderColor.colorize(_getLine(' ', '|', '|'))]);
+  void logDoubleLine() => log([borderColor.colorize(_getLine(doubleLine, '├', '┤'))]);
 
   /// Log string wrapped by box
   void logBox(String str) {
@@ -75,102 +71,130 @@ class AnsiLogger {
     logBoxEnd();
   }
 
-  /// Log box line with start curves
-  String _getEncodable(Object? item) {
-    try {
-      return jsonEncode(item);
-    } catch (e) {
-      return item?.toString() ?? '';
-    }
-  }
-
   /// Log pretty string
 
-  void logString(String str, [String? prefex]) {
+  void logString(
+    String str, {
+    String prefex = '',
+    String separator = '',
+  }) {
     var forceSpace = false;
     str.split('\n').forEach((element) {
-      _logString(element, prefex, forceSpace);
+      _logString(
+        element,
+        prefex: prefex,
+        separator: separator,
+        forceSpace: forceSpace,
+      );
       forceSpace = true;
     });
   }
 
-  void _logString(String str, [String? prefex, bool forceSpace = false]) {
-    var maxWidth = length - 2;
-    var _prefex = prefex == null || prefex.trim().isEmpty
-        ? List.filled((prefex?.length ?? 0), ' ').join('')
-        : '$prefex: ';
+  void _logString(
+    String str, {
+    String prefex = '',
+    String separator = '',
+    required bool forceSpace,
+  }) {
+    var maxWidth = getLength();
     var space = ' ';
-    var strWidth = _stringWidth('╎ $_prefex$str ╎');
-
-    var prefexWidth = _stringWidth(_prefex);
-    var _prefexSpace = '';
-    while ((_stringWidth(_prefexSpace)) < prefexWidth) {
-      _prefexSpace += space;
-    }
-
-    if (strWidth < maxWidth) {
-      var _space = '';
-      while ((_stringWidth('╎ $_prefex$str$_space ╎')) <= length) {
-        _space += space;
-      }
-      log("${borderColor.colorize('╎')} ${decorationColor.colorize(forceSpace ? _prefexSpace : _prefex)}${stringColor.colorize('$str$_space')} ${borderColor.colorize('╎')}");
-      return;
-    }
+    var _prefex = prefex;
+    var _separator = separator;
 
     var _index = 0;
-    var _firstLine = true;
-    while (_index < str.length) {
+    var _showSpaceInstead = forceSpace;
+    while (_index <= str.length) {
       var _line = '';
-      var _pref = _firstLine && !forceSpace ? _prefex : _prefexSpace;
-      while ((_stringWidth('╎ $_pref$_line ╎')) <= length) {
+      while ((_stringWidth('╎ $_prefex$separator$_line ╎')) <= maxWidth) {
         _line += _index < str.length ? str[_index] : space;
         _index++;
       }
-      log("${borderColor.colorize('╎')} ${decorationColor.colorize(_pref)}${stringColor.colorize(_line)} ${borderColor.colorize('╎')}");
-      _firstLine = false;
+      if (_showSpaceInstead) {
+        _prefex = List.filled(_prefex.length, space).join();
+        _separator = List.filled(_separator.length, space).join();
+      }
+      log([
+        borderColor.colorize('╎ '),
+        if (_prefex.isNotEmpty) prefexColor.colorize(_prefex),
+        if (_separator.isNotEmpty) seperatorColor.colorize(_separator),
+        if (_line.isNotEmpty) stringColor.colorize(_line),
+        borderColor.colorize(' ╎'),
+      ]);
+
+      _showSpaceInstead = true;
     }
   }
 
   /// Logging list of items
-  void logList(List list, [int count = 0, String? key, addComma = false]) {
-    var prefex = count == 0 ? '' : "${List.filled(count, ' ').join("")}";
-    var _key = key == null ? '' : '"$key"';
-    var space = '  ';
-    logString(decorationColor.colorize('['), '$prefex$_key');
-    for (var item in list) {
-      if (item is Map) {
-        logJson(item, count + space.length, null, true);
-      } else if (item is List) {
-        logList(item, count + space.length, null, true);
-      } else {
-        logString(_getEncodable(item) + decorationColor.colorize(','),
-            '$space$prefex');
-      }
+  void logList(List list) => _logList(list);
+  void _logList(
+    List list, {
+    int spaces = 0,
+    String key = '',
+  }) {
+    var comma = key.isNotEmpty ? seperatorColor.colorize(',') : '';
+    var prefex = List.filled(spaces, ' ').join();
+    if (list.isEmpty) {
+      logString(prefexColor.colorize('[]') + comma, prefex: '$prefex$key', separator: key.isEmpty ? '' : ' : ');
+    } else {
+      logString(prefexColor.colorize('['), prefex: '$prefex$key', separator: key.isEmpty ? '' : ' : ');
+
+      list.forEach((value) {
+        if (value is Map) {
+          _logJson(
+            value,
+            key: '(Map)',
+            spaces: spaces + 3,
+          );
+        } else if (value is List) {
+          _logList(
+            value,
+            key: '(List)',
+            spaces: spaces + 3,
+          );
+        } else {
+          logString(value.toString() + comma, prefex: '   $prefex');
+        }
+      });
+      logString(prefexColor.colorize(']') + comma, prefex: prefex);
     }
-    logString(decorationColor.colorize('$prefex]${(addComma ? ',' : '')}'));
   }
 
   /// Log json object
-  void logJson(Map json, [int count = 0, String? key, bool addComma = false]) {
-    var prefex = count == 0 ? '' : "${List.filled(count, ' ').join("")}";
+  void logJson(Map json) {
+    _logJson(json);
+  }
+
+  void _logJson(
+    Map json, {
+    int spaces = 0,
+    String key = '',
+  }) {
+    var comma = key.isNotEmpty ? seperatorColor.colorize(',') : '';
+    var prefex = List.filled(spaces, ' ').join();
     if (json.isEmpty) {
-      logString(decorationColor.colorize('{}'), '$prefex');
+      logString(prefexColor.colorize('{}') + comma, prefex: '$prefex$key', separator: key.isEmpty ? '' : ' : ');
     } else {
-      var _key = key == null ? '' : '"$key"';
-      var space = '  ';
-      logString(decorationColor.colorize('{'), '$prefex$_key');
-      json.forEach((key, value) {
+      logString(prefexColor.colorize('{'), prefex: '$prefex$key', separator: key.isEmpty ? '' : ' : ');
+
+      json.forEach((_key, value) {
         if (value is Map) {
-          logJson(value, count + space.length, key, true);
+          _logJson(
+            value,
+            key: _key,
+            spaces: spaces + 3,
+          );
         } else if (value is List) {
-          logList(value, count + space.length, key, true);
+          _logList(
+            value,
+            key: _key,
+            spaces: spaces + 3,
+          );
         } else {
-          logString(_getEncodable(value) + decorationColor.colorize(','),
-              '$space$prefex"$key"');
+          logString(value.toString() + comma, prefex: '   $prefex$_key', separator: ' : ');
         }
       });
-      logString(
-          decorationColor.colorize('}${(addComma ? ',' : '')}'), '$prefex');
+      logString(prefexColor.colorize('}') + comma, prefex: prefex);
     }
   }
 
@@ -210,8 +234,7 @@ class AnsiLogger {
   }
 
   Pattern emojiRegex() {
-    return RegExp(
-        r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])');
+    return RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])');
   }
 
   bool isFullwidthCodePoint(int codePoint) {
@@ -220,9 +243,7 @@ class AnsiLogger {
             codePoint == 0x2329 || // LEFT-POINTING ANGLE BRACKET
             codePoint == 0x232A || // RIGHT-POINTING ANGLE BRACKET
             // CJK Radicals Supplement .. Enclosed CJK Letters and Months
-            (0x2E80 <= codePoint &&
-                codePoint <= 0x3247 &&
-                codePoint != 0x303F) ||
+            (0x2E80 <= codePoint && codePoint <= 0x3247 && codePoint != 0x303F) ||
             // Enclosed CJK Letters and Months .. CJK Unified Ideographs Extension A
             (0x3250 <= codePoint && codePoint <= 0x4DBF) ||
             // CJK Unified Ideographs .. Yi Radicals

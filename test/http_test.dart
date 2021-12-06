@@ -9,7 +9,21 @@ void main() {
       method: 'Get',
       queryParameters: {
         'Key1': 'Value 1',
-        'Key2': 'Value 2',
+        'Key2': {
+          'Key21':
+              'Value 1 sdkjshjdkshdjkhskjdhc hsdjhsdjfhjkdhfjbshdjkdhf jsjdhfjkdfhj hsdjkfhdjkfhj jsfjkdhjfkhd jkdhfjhdjkfh',
+          'Key22': {
+            'kets': 'sss',
+          },
+          'lsit': [
+            'sjdhjsdhjkd',
+            'sdjhsjkdh',
+            true,
+            1166,
+            {'sss': 'mcnkdhckf'},
+            ['sssjkchjskd', 'sdjhdjd']
+          ],
+        },
       },
       requestHeaders: {
         'Key1': 'Value 1',
@@ -33,5 +47,28 @@ void main() {
           'Key1': 'Value 1',
           'Key2': 'Value 2',
         }));
+  });
+
+  test('Test json', () async {
+    var logger = AnsiLogger();
+    logger.logJson({
+      'Key1': 'Value 1',
+      'Key2': {
+        'Key21':
+            'Value 1 sdkjshjdkshdjkhskjdhc hsdjhsdjfhjkdhfjbshdjkdhf jsjdhfjkdfhj hsdjkfhdjkfhj jsfjkdhjfkhd jkdhfjhdjkfh',
+        'Key22': {
+          'kets': 'sss',
+          'jsjjs': {},
+        },
+        'lsit': [
+          'sjdhjsdhjkd',
+          'sdjhsjkdh',
+          true,
+          1166,
+          {'sss': 'mcnkdhckf'},
+          ['sssjkchjskd', 'sdjhdjd']
+        ],
+      },
+    });
   });
 }

@@ -1,5 +1,4 @@
 import 'package:ansi_logger/ansi_logger.dart';
-import 'package:ansi_logger/src/http_response_logger.dart';
 import 'package:test/test.dart';
 
 void main() {
